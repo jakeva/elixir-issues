@@ -4,7 +4,8 @@ defmodule Issues.GithubIssues do
 
 	def fetch(user, project) do
 		issues_url(user, project)
-		|> HTTPoison.get(@user_agent)
+		|> HTTPoison.get(@user_agent, [ssl: [ciphers: [{:rsa, :aes_128_gcm, :null, :sha256}]
+]])
 		|> handle_response
 	end
 
@@ -12,17 +13,13 @@ defmodule Issues.GithubIssues do
 		"#{@github_url}/repos/#{user}/#{project}/issues"
 	end
 
-	def handle_response({ :ok, %{status_code: 200, body: body}}) do
+	def handle_response({ _, %{status_code: status_code, body: body}}) do
 		{
 			status_code |> check_for_error(),
 			body        |> Poison.Parser.parse!()
 		}
 	end
 
-	def check_for_error(200), do :ok
-	def check_for_error(_), do :error
-
-	def handle_response({_, %{status_code: _, body: body}}) do
-		{ :error, body }
-	end
+	def check_for_error(200), do: :ok
+	def check_for_error(_), do: :error
 end
