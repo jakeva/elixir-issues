@@ -4,8 +4,7 @@ defmodule Issues.GithubIssues do
 
 	def fetch(user, project) do
 		issues_url(user, project)
-		|> HTTPoison.get(@user_agent, [ssl: [ciphers: [{:rsa, :aes_128_gcm, :null, :sha256}]
-]])
+		|> HTTPoison.get(@user_agent, [ssl: [ciphers: [{:rsa, :aes_128_gcm, :null, :sha256}]]])
 		|> handle_response
 	end
 
